@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aruba Homes — every listing on the island, one website</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="brand" href="/">
+        <span class="brand-mark">🏝️</span>
+        <span>
+          <strong>Aruba&nbsp;Homes</strong>
+          <small>Every listing on the island — one website</small>
+        </span>
+      </a>
+      <div class="header-meta">
+        <span id="totalCount" class="pill">…</span>
+        <span id="lastUpdated" class="muted">loading…</span>
+        <a href="/admin.html" class="muted admin-link">sync status</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="filters">
+    <div class="wrap filter-row">
+      <div class="seg" role="tablist">
+        <button data-status="sale" class="seg-btn active">For Sale</button>
+        <button data-status="rent" class="seg-btn">For Rent</button>
+        <button data-status="" class="seg-btn">All</button>
+      </div>
+      <input id="q" type="search" placeholder="Search title, address, area…" />
+      <select id="area"><option value="">All areas</option></select>
+      <select id="type"><option value="">All property types</option></select>
+      <select id="beds">
+        <option value="">Beds: any</option>
+        <option value="1">1+</option><option value="2">2+</option>
+        <option value="3">3+</option><option value="4">4+</option><option value="5">5+</option>
+      </select>
+      <input id="minPrice" type="number" placeholder="Min US$" min="0" />
+      <input id="maxPrice" type="number" placeholder="Max US$" min="0" />
+      <select id="source"><option value="">All agencies</option></select>
+      <select id="sort">
+        <option value="newest">Newest first</option>
+        <option value="price_asc">Price: low → high</option>
+        <option value="price_desc">Price: high → low</option>
+      </select>
+      <div class="seg view-toggle">
+        <button id="viewGrid" class="seg-btn active">Grid</button>
+        <button id="viewMap" class="seg-btn">Map</button>
+      </div>
+    </div>
+  </section>
+
+  <main class="wrap">
+    <div id="map" class="map hidden"></div>
+    <div id="grid" class="grid"></div>
+    <div id="empty" class="empty hidden">No listings match these filters.</div>
+    <div class="pager">
+      <button id="prevPage" disabled>← Prev</button>
+      <span id="pageInfo"></span>
+      <button id="nextPage" disabled>Next →</button>
+    </div>
+
+    <section class="directory">
+      <h2>Aruba real estate companies on this site</h2>
+      <p class="muted">Every listing links back to the agency that listed it. Agencies marked
+        “not synced yet” appear in the directory until their feed adapter is added.</p>
+      <ul id="directory" class="directory-list"></ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap muted">
+      Listings are aggregated automatically every 4 hours from Aruban real estate agencies and
+      always credit and link the original source. Prices shown in USD and AWG (ƒ1.79 = US$1).
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>

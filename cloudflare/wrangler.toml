@@ -1,0 +1,25 @@
+name = "aruba-homes"
+main = "src/index.js"
+compatibility_date = "2024-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Static frontend (the same HTML/CSS/JS as the Node build).
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
+# D1 database. After `wrangler d1 create aruba_homes`, paste the printed
+# database_id below (replace the placeholder).
+[[d1_databases]]
+binding = "DB"
+database_name = "aruba_homes"
+database_id = "REPLACE_WITH_ID_FROM_wrangler_d1_create"
+
+# The 4-hour auto-sync. This is the real scheduler (replaces node-cron).
+[triggers]
+crons = ["0 */4 * * *"]
+
+# Production defaults. Set DEMO = "1" (as a variable in the dashboard, or in
+# .dev.vars locally) to load the sample listings instead of live sources.
+[vars]
+DEMO = "0"

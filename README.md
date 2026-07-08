@@ -5,6 +5,10 @@ from **all real estate companies in Aruba**, re-syncs automatically **every
 4 hours**, and always credits and links back to the agency that listed each
 property.
 
+> **Want it on Cloudflare, private and free?** See [`cloudflare/`](cloudflare/) —
+> a Workers + D1 + Cron Triggers port that runs on Cloudflare's free tier and
+> sits behind a Cloudflare Access login locked to your email.
+
 ## Features
 
 - **Unified search** across every agency: for sale / for rent, price range

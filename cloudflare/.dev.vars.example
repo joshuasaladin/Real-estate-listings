@@ -1,0 +1,3 @@
+# Copy to `.dev.vars` for local development (`.dev.vars` is gitignored).
+# DEMO=1 loads the sample listings so you can run the whole thing offline.
+DEMO=1

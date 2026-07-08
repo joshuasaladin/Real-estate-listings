@@ -1,0 +1,19 @@
+{
+  "name": "aruba-homes-cloudflare",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cloudflare Workers + D1 build of the Aruba Homes real estate aggregator.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:init": "wrangler d1 execute aruba_homes --remote --file=schema.sql",
+    "db:init:local": "wrangler d1 execute aruba_homes --local --file=schema.sql",
+    "sync:local": "wrangler dev --test-scheduled"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0"
+  },
+  "devDependencies": {
+    "wrangler": "^3.90.0"
+  }
+}
