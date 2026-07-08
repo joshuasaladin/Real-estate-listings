@@ -17,7 +17,31 @@ credit every source) are unchanged.
 
 ---
 
-## Deploy it (one-time, ~10 minutes)
+## Deploy via the Cloudflare dashboard (Workers Builds / Git integration)
+
+If you connected the GitHub repo in the dashboard (Workers & Pages → your
+Worker), set these under **Settings → Build** — the defaults point at the repo
+root and will fail because this app lives in the `cloudflare/` subfolder:
+
+| Setting | Value |
+| --- | --- |
+| Build branch | `claude/aruba-listings-aggregator-khn30f` (or `main` after merging) |
+| Root directory | `/cloudflare` |
+| Build command | `npm install` |
+| Deploy command | `npx wrangler deploy` |
+
+Then create the database (one-time):
+
+1. **Storage & Databases → D1 → Create Database**, name it `aruba_homes`.
+2. Copy its **Database ID** into `wrangler.toml` (`database_id = "…"`),
+   commit and push — the placeholder value will fail the deploy on purpose
+   until this is set.
+3. On the database page, open the **Console** tab and run the contents of
+   [`schema.sql`](schema.sql) to create the tables.
+4. **Retry build.** After it deploys, open the site's sync-status page and
+   click **“Sync all sources now”** (or wait for the 4-hour cron).
+
+## Deploy via the CLI (alternative)
 
 You need a free Cloudflare account and the Wrangler CLI (`npm install` here
 installs it locally).

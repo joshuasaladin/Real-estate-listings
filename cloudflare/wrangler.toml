@@ -8,12 +8,11 @@ compatibility_flags = ["nodejs_compat"]
 directory = "./public"
 binding = "ASSETS"
 
-# D1 database. After `wrangler d1 create aruba_homes`, paste the printed
-# database_id below (replace the placeholder).
+# D1 database (created in the Cloudflare dashboard).
 [[d1_databases]]
 binding = "DB"
 database_name = "aruba_homes"
-database_id = "REPLACE_WITH_ID_FROM_wrangler_d1_create"
+database_id = "5ddfd3ce-3f88-4417-a462-60ab331f8da5"
 
 # The 4-hour auto-sync. This is the real scheduler (replaces node-cron).
 [triggers]
