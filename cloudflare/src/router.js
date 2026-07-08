@@ -9,6 +9,7 @@ import { CONFIG } from './config.js';
 import { AREAS, PROPERTY_TYPES } from './normalize.js';
 import { allSources, getSource } from './sources/registry.js';
 import { syncAll } from './sync.js';
+import { handleProbe } from './probe.js';
 
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { 'content-type': 'application/json; charset=utf-8' } });
@@ -22,6 +23,7 @@ export async function handleApi(request, env, ctx) {
   if (path === '/api/meta') return meta(env);
   if (path === '/api/status') return status(env);
   if (path === '/api/sync' && request.method === 'POST') return json(await syncAll(env));
+  if (path === '/api/probe') return handleProbe(url, env);
   if (path === '/healthz') return json({ ok: true });
   return json({ error: 'not found' }, 404);
 }
