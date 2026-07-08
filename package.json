@@ -1,0 +1,21 @@
+{
+  "name": "aruba-homes-aggregator",
+  "version": "0.1.0",
+  "description": "One website that aggregates every real estate listing in Aruba, synced from all Aruban real estate companies every 4 hours.",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "DEMO=1 node src/index.js",
+    "sync": "node src/sync.js",
+    "sync:demo": "DEMO=1 node src/sync.js"
+  },
+  "engines": {
+    "node": ">=22.5"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0",
+    "express": "^4.21.2",
+    "node-cron": "^3.0.3"
+  }
+}

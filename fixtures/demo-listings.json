@@ -1,0 +1,127 @@
+[
+  {
+    "external_id": "demo-1",
+    "url": "https://example.com/listing/palm-beach-villa",
+    "title": "Modern 4-Bedroom Villa steps from Palm Beach",
+    "description": "Turn-key villa with private pool, walking distance to Palm Beach high-rise hotels and restaurants.",
+    "price_amount": 1250000, "price_currency": "USD", "price_raw": "US$ 1,250,000",
+    "status": "sale", "type": "villa", "area": "Palm Beach",
+    "address": "Palm Beach 123, Noord", "lat": 12.5741, "lng": -70.0433,
+    "bedrooms": 4, "bathrooms": 3.5, "building_m2": 320, "lot_m2": 650,
+    "images": ["https://example.com/img/villa1a.jpg", "https://example.com/img/villa1b.jpg"]
+  },
+  {
+    "external_id": "demo-2",
+    "url": "https://example.com/listing/eagle-beach-condo",
+    "title": "Oceanview 2-Bedroom Condo at Eagle Beach",
+    "description": "Fully furnished condo with resort amenities across from Eagle Beach.",
+    "price_amount": 585000, "price_currency": "USD", "price_raw": "US$ 585,000",
+    "status": "sale", "type": "condo", "area": "Eagle Beach",
+    "address": "J.E. Irausquin Blvd 250", "lat": 12.5539, "lng": -70.0577,
+    "bedrooms": 2, "bathrooms": 2, "building_m2": 110,
+    "images": ["https://example.com/img/condo2a.jpg"]
+  },
+  {
+    "external_id": "demo-3",
+    "url": "https://example.com/listing/malmok-luxury-estate",
+    "title": "Luxury Estate with Ocean Views in Malmok",
+    "description": "Architectural estate near Boca Catalina with infinity pool and guest house.",
+    "price_amount": 3900000, "price_currency": "USD", "price_raw": "US$ 3,900,000",
+    "status": "sale", "type": "villa", "area": "Malmok",
+    "address": "Malmokweg 8", "lat": 12.5936, "lng": -70.0492,
+    "bedrooms": 6, "bathrooms": 6.5, "building_m2": 580, "lot_m2": 1400,
+    "images": ["https://example.com/img/estate3a.jpg"]
+  },
+  {
+    "external_id": "demo-4",
+    "url": "https://example.com/listing/oranjestad-townhouse",
+    "title": "Renovated Townhouse in downtown Oranjestad",
+    "price_amount": 465000, "price_currency": "AWG", "price_raw": "Afl. 465.000",
+    "status": "sale", "type": "house", "area": "Oranjestad",
+    "address": "Wilhelminastraat 45", "lat": 12.5227, "lng": -70.0358,
+    "bedrooms": 3, "bathrooms": 2, "building_m2": 165, "lot_m2": 210,
+    "images": ["https://example.com/img/town4a.jpg"]
+  },
+  {
+    "external_id": "demo-5",
+    "url": "https://example.com/listing/savaneta-beach-house",
+    "title": "Beachfront House in quiet Savaneta",
+    "description": "Directly on the water in Aruba's oldest fishing village.",
+    "price_amount": 890000, "price_currency": "USD", "price_raw": "US$ 890,000",
+    "status": "sale", "type": "house", "area": "Savaneta",
+    "address": "Savaneta 338", "lat": 12.4472, "lng": -69.9525,
+    "bedrooms": 3, "bathrooms": 2, "building_m2": 190, "lot_m2": 480,
+    "images": ["https://example.com/img/beach5a.jpg"]
+  },
+  {
+    "external_id": "demo-6",
+    "url": "https://example.com/listing/tierra-del-sol-lot",
+    "title": "Building Lot on Tierra del Sol Golf Course",
+    "price_amount": 295000, "price_currency": "USD", "price_raw": "US$ 295,000",
+    "status": "sale", "type": "land", "area": "Tierra del Sol",
+    "lat": 12.6014, "lng": -70.0402, "lot_m2": 900,
+    "images": []
+  },
+  {
+    "external_id": "demo-7",
+    "url": "https://example.com/listing/noord-family-home",
+    "title": "Family Home with Pool in Noord",
+    "price_amount": 645000, "price_currency": "USD", "price_raw": "US$ 645,000",
+    "status": "sale", "type": "house", "area": "Noord",
+    "address": "Rooi Santo 12", "lat": 12.5794, "lng": -70.0271,
+    "bedrooms": 4, "bathrooms": 3, "building_m2": 240, "lot_m2": 560,
+    "images": ["https://example.com/img/home7a.jpg"]
+  },
+  {
+    "external_id": "demo-8",
+    "url": "https://example.com/listing/san-nicolas-commercial",
+    "title": "Commercial Building on San Nicolas Main Street",
+    "price_amount": 380000, "price_currency": "USD", "price_raw": "US$ 380,000",
+    "status": "sale", "type": "commercial", "area": "San Nicolas",
+    "address": "B. v/d Veen Zeppenfeldstraat 25", "lat": 12.4361, "lng": -69.9099,
+    "building_m2": 300, "lot_m2": 350,
+    "images": []
+  },
+  {
+    "external_id": "demo-9",
+    "url": "https://example.com/listing/palm-beach-rental",
+    "title": "Long-term Rental: 2-Bedroom Apartment near Palm Beach",
+    "price_amount": 1800, "price_currency": "USD", "price_raw": "US$ 1,800 / month",
+    "status": "rent", "type": "apartment", "area": "Palm Beach",
+    "lat": 12.5702, "lng": -70.0401,
+    "bedrooms": 2, "bathrooms": 1, "building_m2": 85,
+    "images": ["https://example.com/img/rent9a.jpg"]
+  },
+  {
+    "external_id": "demo-10",
+    "url": "https://example.com/listing/paradera-cunucu-house",
+    "title": "Authentic Cunucu House in Paradera",
+    "description": "Restored traditional Aruban country house on a large lot.",
+    "price_amount": 520000, "price_currency": "AWG", "price_raw": "Afl. 520.000",
+    "status": "sale", "type": "house", "area": "Paradera",
+    "lat": 12.5286, "lng": -69.9762,
+    "bedrooms": 3, "bathrooms": 2, "building_m2": 175, "lot_m2": 800,
+    "images": []
+  },
+  {
+    "external_id": "demo-11",
+    "url": "https://example.com/agency-b/palm-beach-villa",
+    "title": "Palm Beach Villa — 4BR with Private Pool",
+    "description": "Same physical property as demo-1, listed by a second agency, to exercise dedupe.",
+    "price_amount": 1249000, "price_currency": "USD", "price_raw": "US$ 1,249,000",
+    "status": "sale", "type": "villa", "area": "Palm Beach",
+    "address": "Palm Beach 123, Noord", "lat": 12.5741, "lng": -70.0433,
+    "bedrooms": 4, "bathrooms": 3.5, "building_m2": 320, "lot_m2": 650,
+    "images": ["https://example.com/img/villa1-alt.jpg"]
+  },
+  {
+    "external_id": "demo-12",
+    "url": "https://example.com/listing/divi-timeshare",
+    "title": "Timeshare Week 22 at Divi Village Golf & Beach Resort",
+    "price_amount": 9500, "price_currency": "USD", "price_raw": "US$ 9,500",
+    "status": "sale", "type": "timeshare", "area": "Oranjestad",
+    "lat": 12.5385, "lng": -70.0554,
+    "bedrooms": 1, "bathrooms": 1,
+    "images": []
+  }
+]

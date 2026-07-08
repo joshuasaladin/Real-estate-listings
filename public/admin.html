@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sync status — Aruba Homes</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="brand" href="/">
+        <span class="brand-mark">🏝️</span>
+        <span><strong>Aruba Homes</strong><small>Sync status</small></span>
+      </a>
+      <div class="header-meta"><a href="/" class="muted admin-link">← back to listings</a></div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="admin-actions">
+      <button id="syncNow" class="btn">Sync all sources now</button>
+      <span id="schedule" class="muted"></span>
+      <span id="syncMsg" class="muted"></span>
+    </div>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Company</th><th>Synced</th><th>Active listings</th>
+          <th>Last run</th><th>Last success</th><th>Result</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </main>
+
+  <script>
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const when = (t) => (t ? new Date(t).toLocaleString() : '—');
+
+    async function load() {
+      const data = await (await fetch('/api/status')).json();
+      document.getElementById('schedule').textContent =
+        `Automatic schedule: ${data.schedule} (every 4 hours)`;
+      document.getElementById('rows').innerHTML = data.sources.map((s) => `
+        <tr>
+          <td><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.name)}</a></td>
+          <td>${s.synced ? '✅' : '<span class="tag pending">adapter pending</span>'}</td>
+          <td>${s.activeListings}</td>
+          <td>${when(s.lastRun?.at)}</td>
+          <td>${when(s.lastSuccess)}</td>
+          <td>${s.lastRun
+            ? (s.lastRun.ok
+                ? `OK — ${s.lastRun.found} listings`
+                : `<span class="err">${esc(s.lastRun.error)}</span>`)
+            : '—'}</td>
+        </tr>`).join('');
+    }
+
+    document.getElementById('syncNow').addEventListener('click', async (e) => {
+      e.target.disabled = true;
+      document.getElementById('syncMsg').textContent = 'Syncing…';
+      try {
+        await fetch('/api/sync', { method: 'POST' });
+        document.getElementById('syncMsg').textContent = 'Done.';
+      } catch (err) {
+        document.getElementById('syncMsg').textContent = 'Sync failed: ' + err;
+      }
+      e.target.disabled = false;
+      load();
+    });
+
+    load();
+    setInterval(load, 30000);
+  </script>
+</body>
+</html>
