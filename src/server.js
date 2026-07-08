@@ -12,6 +12,9 @@ export function createServer() {
   const app = express();
   app.use(express.static(PUBLIC_DIR));
 
+  // Health check for hosting platforms (Render/Railway/Fly).
+  app.get('/healthz', (req, res) => res.json({ ok: true }));
+
   // ---- Listings search -----------------------------------------------------
   app.get('/api/listings', (req, res) => {
     const db = getDb();

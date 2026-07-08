@@ -1,0 +1,25 @@
+# Render blueprint. In the Render dashboard: New + -> Blueprint -> connect this
+# repo and pick the claude/aruba-listings-aggregator-khn30f branch.
+# Render reads this file and provisions everything automatically.
+#
+# Note: a persistent disk (for SQLite) and an always-on service (for the
+# 4-hour scheduler) require a paid instance. The "starter" plan below keeps
+# the app awake so the sync actually fires every 4 hours.
+services:
+  - type: web
+    name: aruba-homes
+    runtime: node
+    plan: starter
+    branch: claude/aruba-listings-aggregator-khn30f
+    buildCommand: npm ci
+    startCommand: node src/index.js
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DB_PATH
+        value: /data/listings.db
+    disk:
+      name: listings-data
+      mountPath: /data
+      sizeGB: 1
