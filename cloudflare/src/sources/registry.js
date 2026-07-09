@@ -16,14 +16,16 @@ import * as demo from '../adapters/demo.js';
 
 const BASE = [
   {
-    // Aggregator covering many brokers — the deepest single source. Its
-    // robots.txt disallows the /sale/all search pages (respected); the
-    // sitemap + homepage are used instead.
+    // Aggregator covering many brokers — the deepest single source, so it
+    // deep-crawls EVERY cycle (priority) instead of rotating. Its robots.txt
+    // disallows the /sale/all search pages (respected); the sitemap +
+    // homepage are used instead. Sale listings only.
     id: 'arubalistings', name: 'Aruba Listings', url: 'https://arubalistings.com',
-    adapter: crawler, incremental: true,
+    adapter: crawler, incremental: true, priority: true,
     config: {
-      listingPattern: '/(sale|rent)/[^/]+',
+      listingPattern: '/sale/[^/]+',
       seedArchives: [''],
+      batch: 14,
     },
   },
   {
@@ -82,8 +84,8 @@ const BASE = [
       archives: [
         { path: '', status: 'sale', pages: 1 },
         { path: '/property/residential-for-sale', status: 'sale', pages: 1 },
+        { path: '/property/condominium-for-sale', status: 'sale', pages: 1 },
         { path: '/property/land-for-sale', status: 'sale', pages: 1 },
-        { path: '/property/residential-rental', status: 'rent', pages: 1 },
       ],
     },
   },
@@ -109,14 +111,8 @@ const BASE = [
     id: 'buyersagent', name: "Buyer's Agent Aruba", url: 'https://buyersagentaruba.com',
   },
   {
-    // Vacation rentals platform (custom).
+    // Vacation-rentals platform — excluded from sync by the sale-only policy.
     id: 'bluearuba', name: 'BlueAruba Realty', url: 'https://www.bluearuba.com',
-    adapter: crawler, incremental: true,
-    config: {
-      listingPattern: '/(rentals?|properties|condos?|listings?|units?)/[^/]+',
-      seedArchives: [''],
-      defaultStatus: 'rent',
-    },
   },
   // These sites were down/erroring when probed (530/503) — kept in the
   // directory; adapters can be added if they come back online.

@@ -68,11 +68,9 @@ function renderGrid(res) {
       <div class="card-photo">
         ${img ? `<img src="${esc(img)}" alt="" loading="lazy" onerror="this.remove()">` : '🏠'}
         ${isNew(l) ? '<span class="badge-new">New</span>' : ''}
-        <span class="badge-status">${l.status === 'rent' ? 'For Rent' : 'For Sale'}</span>
       </div>
       <div class="card-body">
         <div class="card-price">${l.price_usd ? fmtUsd(l.price_usd) : (esc(l.price_raw) || 'Price on request')}
-          ${l.status === 'rent' ? '<small>/mo</small>' : ''}
           ${l.price_awg ? `<small>· ${fmtAwg(l.price_awg)}</small>` : ''}
         </div>
         <div class="card-title">${esc(l.title)}</div>
@@ -145,15 +143,7 @@ function esc(s) {
 const cap = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
 // ---- wire up controls ------------------------------------------------------
-document.querySelectorAll('.seg-btn[data-status]').forEach((btn) => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.seg-btn[data-status]').forEach((b) => b.classList.remove('active'));
-    btn.classList.add('active');
-    state.status = btn.dataset.status;
-    state.page = 1;
-    loadListings();
-  });
-});
+// Sale-only site: state.status stays 'sale'; there are no rent/all tabs.
 for (const id of ['area', 'type', 'beds', 'source', 'sort']) {
   $(id).addEventListener('change', () => { state[id] = $(id).value; state.page = 1; loadListings(); });
 }

@@ -13,23 +13,30 @@ import { resetSubrequestBudget } from './fetch.js';
 export async function syncAll(env) {
   resetSubrequestBudget(env);
   await ensureMeta(env);
+  // SALE-ONLY POLICY: purge any rental rows (also cleans up pre-policy data).
+  await env.DB.prepare("DELETE FROM listings WHERE status = 'rent'").run();
   const run = (parseInt(await getMeta(env, 'run_counter'), 10) || 0) + 1;
   await setMeta(env, 'run_counter', String(run));
 
   const enabled = enabledSources(env);
   const everyRun = enabled.filter((s) => !s.incremental);
   const incremental = enabled.filter((s) => s.incremental);
-  const rotated = incremental.length ? [incremental[(run - 1) % incremental.length]] : [];
+  // Priority incremental sources (Aruba Listings) deep-crawl EVERY cycle;
+  // the rest rotate one per cycle.
+  const priority = incremental.filter((s) => s.priority);
+  const rest = incremental.filter((s) => !s.priority);
+  const rotated = rest.length ? [rest[(run - 1) % rest.length]] : [];
 
   const results = [];
   for (const source of everyRun) results.push(await syncSource(env, source));
+  for (const source of priority) results.push(await syncSource(env, source));
   for (const source of rotated) results.push(await syncSource(env, source));
 
   const dedupe = await runDedupe(env);
   console.log(`[sync] run ${run}: dedupe ${dedupe.groups} groups / ${dedupe.listings_grouped} listings`);
   return {
     run,
-    deepCrawledThisRun: rotated.map((s) => s.id),
+    deepCrawledThisRun: [...priority, ...rotated].map((s) => s.id),
     sources: results,
     dedupe,
   };

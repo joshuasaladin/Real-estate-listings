@@ -60,10 +60,17 @@ export function guessArea(text) {
   return null;
 }
 
+// SALE-ONLY POLICY: the site shows properties for sale exclusively. Rentals,
+// vacation rentals and by-the-week/night offerings are rejected at sync time.
+const RENTAL_RE = /per\s*week|\/\s*week|weekly\s*(?:rate|rental)|per\s*night|\/\s*night|nightly|vacation\s*rental|short[-\s]?term\s*rental|holiday\s*rental|per\s*month|\/\s*mo(?:nth)?\b|p\/m\b/i;
+
 export function normalizeListing(raw, source) {
   if (!raw || !raw.external_id || !raw.url || !raw.title) return null;
   // Safety net: never store leaked markup as a title.
   if (/[<>]/.test(String(raw.title))) return null;
+  // Sale-only: drop anything marked or worded as a rental.
+  if (raw.status === 'rent') return null;
+  if (RENTAL_RE.test(`${raw.title} ${raw.price_raw || ''} ${raw.description || ''}`)) return null;
   const prices = toPrices(raw.price_amount, raw.price_currency);
   return {
     source_id: source.id,
