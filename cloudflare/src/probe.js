@@ -85,6 +85,9 @@ function summarize(text, ct) {
     out.sitemapUrls = locs.slice(0, 40);
   } else if (isJson) {
     out.jsonHead = text.slice(0, 1200);
+  } else if (!isHtml) {
+    // Plain text (e.g. robots.txt) — show it directly.
+    out.textHead = text.slice(0, 1500);
   } else if (isHtml) {
     out.title = (text.match(/<title[^>]*>([^<]*)<\/title>/i) || [])[1]?.trim();
     out.generator = (text.match(/<meta[^>]+name=["']generator["'][^>]+content=["']([^"']+)/i) || [])[1];
