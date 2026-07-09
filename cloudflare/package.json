@@ -2,6 +2,7 @@
   "name": "aruba-homes-cloudflare",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "Cloudflare Workers + D1 build of the Aruba Homes real estate aggregator.",
   "scripts": {
     "dev": "wrangler dev",

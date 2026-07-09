@@ -12,7 +12,7 @@ const PAGES = [
   { path: '/sale/all', status: 'sale' },
   { path: '/rent/all', status: 'rent' },
 ];
-const MAX_PAGINATION = 25;
+const MAX_PAGINATION = 3; // kept low to share the Workers subrequest budget across all sources
 
 export async function fetchListings(source) {
   const all = new Map();

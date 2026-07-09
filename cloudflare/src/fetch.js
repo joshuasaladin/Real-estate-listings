@@ -6,6 +6,11 @@ import { CONFIG } from './config.js';
 // which is fine for a single scheduled sync pass.
 const robotsCache = new Map();
 const lastHit = new Map();
+let subrequestCount = 0; // per-invocation guard against the Workers subrequest cap
+
+export function resetSubrequestBudget() {
+  subrequestCount = 0;
+}
 
 async function getRobots(origin) {
   if (robotsCache.has(origin)) return robotsCache.get(origin);
@@ -49,15 +54,19 @@ export async function isAllowed(url) {
 }
 
 export async function politeFetch(url) {
+  if (subrequestCount >= CONFIG.MAX_SUBREQUESTS) {
+    throw new Error(`subrequest budget (${CONFIG.MAX_SUBREQUESTS}) reached — raise MAX_SUBREQUESTS on Workers Paid`);
+  }
   if (!(await isAllowed(url))) throw new Error(`robots.txt disallows fetching ${url}`);
   const host = new URL(url).host;
   const delay = (lastHit.get(host) || 0) + CONFIG.REQUEST_DELAY_MS - Date.now();
   if (delay > 0) await new Promise((r) => setTimeout(r, delay));
   lastHit.set(host, Date.now());
+  subrequestCount++;
 
   const res = await fetch(url, {
     headers: {
-      'user-agent': CONFIG.USER_AGENT,
+      'user-agent': CONFIG.BROWSER_UA,
       accept: 'text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8',
       'accept-language': 'en,nl;q=0.8',
     },

@@ -2,28 +2,94 @@
 // are synced every 4 hours by the Cron Trigger; entries without one still
 // appear in the site's agency directory as "not synced yet".
 //
-// To add a company: add an entry here. To make it sync, write an adapter
-// (see adapters/arubalistings.js as a model) and reference it.
+// The generic adapter is driven by `config` (archive pages + listing-URL
+// pattern) — see adapters/generic.js. Patterns below were verified via the
+// /api/probe endpoint (what Cloudflare's network can actually reach).
 import { isDemo } from '../config.js';
 import * as arubalistings from '../adapters/arubalistings.js';
+import * as generic from '../adapters/generic.js';
 import * as demo from '../adapters/demo.js';
 
 const BASE = [
-  { id: 'arubalistings', name: 'Aruba Listings', url: 'https://arubalistings.com', adapter: arubalistings },
-  { id: 'mpgaruba', name: 'MPG Aruba Real Estate', url: 'https://www.mpgaruba.com' },
+  {
+    id: 'arubalistings', name: 'Aruba Listings', url: 'https://arubalistings.com',
+    adapter: arubalistings, // bespoke: aggregator covering many brokers
+  },
+  {
+    id: 'mpgaruba', name: 'MPG Aruba Real Estate', url: 'https://www.mpgaruba.com',
+    adapter: generic,
+    config: {
+      listingPattern: '/property/[^/]+',
+      archives: [
+        { path: '/property', status: 'sale', pages: 3 },
+        { path: '/for-sale', status: 'sale', pages: 1 },
+      ],
+    },
+  },
   { id: 'coldwellbanker', name: 'Coldwell Banker Aruba Realty', url: 'https://www.coldwellbanker.aw' },
   { id: 'sothebys', name: "Aruba Sotheby's International Realty", url: 'https://www.sothebysrealty.com/eng/sales/abw' },
   { id: 'bhhsaruba', name: 'Berkshire Hathaway HomeServices Aruba Realty', url: 'https://www.bhhsaruba.com' },
-  { id: 'arubapalms', name: 'Aruba Palms Realtors', url: 'https://arubapalmsrealtors.com' },
-  { id: 'arubabrokers', name: 'Aruba Brokers', url: 'https://www.arubabrokers.com' },
-  { id: 'remaxaruba', name: 'RE/MAX Aruba', url: 'https://remaxaruba.com' },
-  { id: 'bluefin', name: 'Bluefin Realtors', url: 'https://bluefinrealtors.com' },
-  { id: 'associatedrealtors', name: 'Associated Realtors Aruba', url: 'https://associatedrealtorsaruba.com' },
+  {
+    id: 'arubapalms', name: 'Aruba Palms Realtors', url: 'https://arubapalmsrealtors.com',
+    adapter: generic,
+    config: {
+      listingPattern: '/properties/[^/]+',
+      archives: [{ path: '/properties/', status: 'sale', pages: 3 }],
+    },
+  },
+  {
+    id: 'arubabrokers', name: 'Aruba Brokers', url: 'https://www.arubabrokers.com',
+    adapter: generic,
+    config: {
+      listingPattern: '/property/[^/]+',
+      archives: [{ path: '/property/', status: 'sale', pages: 3 }],
+    },
+  },
+  {
+    id: 'remaxaruba', name: 'RE/MAX Aruba', url: 'https://remaxaruba.com',
+    adapter: generic,
+    config: {
+      listingPattern: '/property/details/[^/]+',
+      archives: [
+        { path: '/property/residential-for-sale', status: 'sale', pages: 1 },
+        { path: '/property/condominium-for-sale', status: 'sale', pages: 1 },
+        { path: '/property/land-for-sale', status: 'sale', pages: 1 },
+        { path: '/property/commercial-for-sale', status: 'sale', pages: 1 },
+        { path: '/property/residential-rental', status: 'rent', pages: 1 },
+      ],
+    },
+  },
+  {
+    id: 'bluefin', name: 'Bluefin Realtors', url: 'https://bluefinrealtors.com',
+    adapter: generic,
+    config: {
+      listingPattern: '/property/[^/]+',
+      archives: [{ path: '/property/', status: 'sale', pages: 3 }],
+    },
+  },
+  {
+    id: 'associatedrealtors', name: 'Associated Realtors Aruba', url: 'https://associatedrealtorsaruba.com',
+    adapter: generic,
+    config: {
+      listingPattern: '/property/[^/]+',
+      archives: [{ path: '/property/', status: 'sale', pages: 3 }],
+    },
+  },
   { id: 'buyersagent', name: "Buyer's Agent Aruba", url: 'https://buyersagentaruba.com' },
   { id: 'bluearuba', name: 'BlueAruba Realty', url: 'https://www.bluearuba.com' },
   { id: 'benrealestate', name: 'Ben Real Estate', url: 'https://benrealestatearuba.com' },
   { id: 'century21', name: 'Century 21 Aruba', url: 'https://century21aruba.com' },
-  { id: 'goldcoast', name: 'Gold Coast Aruba', url: 'https://www.goldcoastaruba.com' },
+  {
+    id: 'goldcoast', name: 'Gold Coast Aruba', url: 'https://www.goldcoastaruba.com',
+    adapter: generic,
+    config: {
+      listingPattern: '/(property|properties|listing|listings)/[^/]+',
+      archives: [
+        { path: '/properties/', status: 'sale', pages: 2 },
+        { path: '/listings/', status: 'sale', pages: 1 },
+      ],
+    },
+  },
   { id: 'kellerwilliams', name: 'Keller Williams Aruba', url: 'https://kwaruba.com' },
   { id: 'casyestilo', name: 'Cas y Estilo', url: 'https://arubahomes.com' },
 ];

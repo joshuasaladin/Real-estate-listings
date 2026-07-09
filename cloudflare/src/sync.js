@@ -5,8 +5,10 @@ import { enabledSources } from './sources/registry.js';
 import { normalizeListing } from './normalize.js';
 import { upsertListing, deactivateMissing, recordSyncRun } from './db.js';
 import { runDedupe } from './dedupe.js';
+import { resetSubrequestBudget } from './fetch.js';
 
 export async function syncAll(env) {
+  resetSubrequestBudget();
   const results = [];
   for (const source of enabledSources(env)) {
     results.push(await syncSource(env, source));
