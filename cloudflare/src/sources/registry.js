@@ -6,23 +6,33 @@
 // pattern) — see adapters/generic.js. Patterns below were verified via the
 // /api/probe endpoint (what Cloudflare's network can actually reach).
 import { isDemo } from '../config.js';
-import * as arubalistings from '../adapters/arubalistings.js';
 import * as generic from '../adapters/generic.js';
 import * as demo from '../adapters/demo.js';
 
 const BASE = [
   {
+    // Aggregator covering many brokers. Its robots.txt disallows the /sale/all
+    // search pages (respected), so we harvest the listing links surfaced on
+    // the homepage instead.
     id: 'arubalistings', name: 'Aruba Listings', url: 'https://arubalistings.com',
-    adapter: arubalistings, // bespoke: aggregator covering many brokers
+    adapter: generic,
+    config: {
+      listingPattern: '/(sale|rent)/[^/]+',
+      archives: [{ path: '', status: 'sale', pages: 1 }],
+    },
   },
   {
+    // OctoberCMS; /property archive 404s but the homepage carries listing
+    // links (/property/<slug>) — harvest those plus likely archive paths.
     id: 'mpgaruba', name: 'MPG Aruba Real Estate', url: 'https://www.mpgaruba.com',
     adapter: generic,
     config: {
       listingPattern: '/property/[^/]+',
       archives: [
-        { path: '/property', status: 'sale', pages: 3 },
+        { path: '', status: 'sale', pages: 1 },
+        { path: '/properties', status: 'sale', pages: 1 },
         { path: '/for-sale', status: 'sale', pages: 1 },
+        { path: '/for-rent', status: 'rent', pages: 1 },
       ],
     },
   },
@@ -46,15 +56,18 @@ const BASE = [
     },
   },
   {
+    // Category pages are JS-rendered (fetch OK but 0 parseable cards); the
+    // homepage carries server-rendered /property/details/ links, so start
+    // there and keep the category pages in case they gain SSR.
     id: 'remaxaruba', name: 'RE/MAX Aruba', url: 'https://remaxaruba.com',
     adapter: generic,
     config: {
       listingPattern: '/property/details/[^/]+',
       archives: [
+        { path: '', status: 'sale', pages: 1 },
         { path: '/property/residential-for-sale', status: 'sale', pages: 1 },
         { path: '/property/condominium-for-sale', status: 'sale', pages: 1 },
         { path: '/property/land-for-sale', status: 'sale', pages: 1 },
-        { path: '/property/commercial-for-sale', status: 'sale', pages: 1 },
         { path: '/property/residential-rental', status: 'rent', pages: 1 },
       ],
     },
@@ -80,13 +93,15 @@ const BASE = [
   { id: 'benrealestate', name: 'Ben Real Estate', url: 'https://benrealestatearuba.com' },
   { id: 'century21', name: 'Century 21 Aruba', url: 'https://century21aruba.com' },
   {
+    // /properties/ 404s; try the homepage and common WP archive paths.
     id: 'goldcoast', name: 'Gold Coast Aruba', url: 'https://www.goldcoastaruba.com',
     adapter: generic,
     config: {
-      listingPattern: '/(property|properties|listing|listings)/[^/]+',
+      listingPattern: '/(property|properties|listing|listings|homes-for-sale|villas)/[^/]+',
       archives: [
-        { path: '/properties/', status: 'sale', pages: 2 },
-        { path: '/listings/', status: 'sale', pages: 1 },
+        { path: '', status: 'sale', pages: 1 },
+        { path: '/homes-for-sale/', status: 'sale', pages: 1 },
+        { path: '/property/', status: 'sale', pages: 1 },
       ],
     },
   },

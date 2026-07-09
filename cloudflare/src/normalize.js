@@ -62,6 +62,8 @@ export function guessArea(text) {
 
 export function normalizeListing(raw, source) {
   if (!raw || !raw.external_id || !raw.url || !raw.title) return null;
+  // Safety net: never store leaked markup as a title.
+  if (/[<>]/.test(String(raw.title))) return null;
   const prices = toPrices(raw.price_amount, raw.price_currency);
   return {
     source_id: source.id,

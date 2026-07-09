@@ -57,6 +57,12 @@ function renderGrid(res) {
   for (const l of res.listings) {
     const el = document.createElement('article');
     el.className = 'card';
+    // Whole card opens the original listing (inner links still work normally).
+    el.addEventListener('click', (ev) => {
+      if (ev.target.closest('a')) return;
+      const url = l.agencies[0]?.url;
+      if (url) window.open(url, '_blank', 'noopener');
+    });
     const img = l.images && l.images[0];
     el.innerHTML = `
       <div class="card-photo">
