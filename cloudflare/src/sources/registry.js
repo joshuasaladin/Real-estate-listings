@@ -1,44 +1,61 @@
-// Registry of every real estate company in Aruba. Entries with an `adapter`
-// are synced every 4 hours by the Cron Trigger; entries without one still
-// appear in the site's agency directory as "not synced yet".
+// Registry of every real estate company in Aruba.
 //
-// The generic adapter is driven by `config` (archive pages + listing-URL
-// pattern) — see adapters/generic.js. Patterns below were verified via the
-// /api/probe endpoint (what Cloudflare's network can actually reach).
+// Adapter types:
+//  - generic:  card-harvests archive/index pages every 4-hour cycle (cheap)
+//  - crawler:  discovers ALL listing URLs via the site's sitemap and crawls
+//              detail pages; marked `incremental: true` so sync rotates one
+//              per cycle and coverage accumulates run over run
+//  - (none):   shown in the site's agency directory as "not synced yet"
+//
+// URL patterns below were verified via the /api/probe endpoint from
+// Cloudflare's own network.
 import { isDemo } from '../config.js';
 import * as generic from '../adapters/generic.js';
+import * as crawler from '../adapters/crawler.js';
 import * as demo from '../adapters/demo.js';
 
 const BASE = [
   {
-    // Aggregator covering many brokers. Its robots.txt disallows the /sale/all
-    // search pages (respected), so we harvest the listing links surfaced on
-    // the homepage instead.
+    // Aggregator covering many brokers — the deepest single source. Its
+    // robots.txt disallows the /sale/all search pages (respected); the
+    // sitemap + homepage are used instead.
     id: 'arubalistings', name: 'Aruba Listings', url: 'https://arubalistings.com',
-    adapter: generic,
+    adapter: crawler, incremental: true,
     config: {
       listingPattern: '/(sale|rent)/[^/]+',
-      archives: [{ path: '', status: 'sale', pages: 1 }],
+      seedArchives: [''],
     },
   },
   {
-    // OctoberCMS; /property archive 404s but the homepage carries listing
-    // links (/property/<slug>) — harvest those plus likely archive paths.
+    // OctoberCMS; /property archive 404s but detail URLs are /property/<slug>.
     id: 'mpgaruba', name: 'MPG Aruba Real Estate', url: 'https://www.mpgaruba.com',
-    adapter: generic,
+    adapter: crawler, incremental: true,
     config: {
       listingPattern: '/property/[^/]+',
-      archives: [
-        { path: '', status: 'sale', pages: 1 },
-        { path: '/properties', status: 'sale', pages: 1 },
-        { path: '/for-sale', status: 'sale', pages: 1 },
-        { path: '/for-rent', status: 'rent', pages: 1 },
-      ],
+      seedArchives: [''],
     },
   },
-  { id: 'coldwellbanker', name: 'Coldwell Banker Aruba Realty', url: 'https://www.coldwellbanker.aw' },
-  { id: 'sothebys', name: "Aruba Sotheby's International Realty", url: 'https://www.sothebysrealty.com/eng/sales/abw' },
-  { id: 'bhhsaruba', name: 'Berkshire Hathaway HomeServices Aruba Realty', url: 'https://www.bhhsaruba.com' },
+  {
+    id: 'coldwellbanker', name: 'Coldwell Banker Aruba Realty', url: 'https://www.coldwellbanker.aw',
+    adapter: crawler, incremental: true,
+    config: {
+      listingPattern: '/(property|properties|listing|listings|details?|real-estate)/[^/]+',
+      seedArchives: [''],
+    },
+  },
+  {
+    // Global JS platform; Aruba listings not separable via sitemap — needs a
+    // partnership/feed. Directory-only for now.
+    id: 'sothebys', name: "Aruba Sotheby's International Realty", url: 'https://www.sothebysrealty.com/eng/sales/abw',
+  },
+  {
+    id: 'bhhsaruba', name: 'Berkshire Hathaway HomeServices Aruba Realty', url: 'https://www.bhhsaruba.com',
+    adapter: crawler, incremental: true,
+    config: {
+      listingPattern: '/(property|properties|listing|listings|homes?|real-estate)/[^/]+',
+      seedArchives: [''],
+    },
+  },
   {
     id: 'arubapalms', name: 'Aruba Palms Realtors', url: 'https://arubapalmsrealtors.com',
     adapter: generic,
@@ -56,9 +73,8 @@ const BASE = [
     },
   },
   {
-    // Category pages are JS-rendered (fetch OK but 0 parseable cards); the
-    // homepage carries server-rendered /property/details/ links, so start
-    // there and keep the category pages in case they gain SSR.
+    // Category pages are JS-rendered; the homepage carries server-rendered
+    // /property/details/ links.
     id: 'remaxaruba', name: 'RE/MAX Aruba', url: 'https://remaxaruba.com',
     adapter: generic,
     config: {
@@ -66,7 +82,6 @@ const BASE = [
       archives: [
         { path: '', status: 'sale', pages: 1 },
         { path: '/property/residential-for-sale', status: 'sale', pages: 1 },
-        { path: '/property/condominium-for-sale', status: 'sale', pages: 1 },
         { path: '/property/land-for-sale', status: 'sale', pages: 1 },
         { path: '/property/residential-rental', status: 'rent', pages: 1 },
       ],
@@ -88,19 +103,32 @@ const BASE = [
       archives: [{ path: '/property/', status: 'sale', pages: 3 }],
     },
   },
-  { id: 'buyersagent', name: "Buyer's Agent Aruba", url: 'https://buyersagentaruba.com' },
-  { id: 'bluearuba', name: 'BlueAruba Realty', url: 'https://www.bluearuba.com' },
+  {
+    // Behind a bot challenge ("Just a moment…") even from Cloudflare's
+    // network. Needs a feed/partnership. Directory-only.
+    id: 'buyersagent', name: "Buyer's Agent Aruba", url: 'https://buyersagentaruba.com',
+  },
+  {
+    // Vacation rentals platform (custom).
+    id: 'bluearuba', name: 'BlueAruba Realty', url: 'https://www.bluearuba.com',
+    adapter: crawler, incremental: true,
+    config: {
+      listingPattern: '/(rentals?|properties|condos?|listings?|units?)/[^/]+',
+      seedArchives: [''],
+      defaultStatus: 'rent',
+    },
+  },
+  // These sites were down/erroring when probed (530/503) — kept in the
+  // directory; adapters can be added if they come back online.
   { id: 'benrealestate', name: 'Ben Real Estate', url: 'https://benrealestatearuba.com' },
   { id: 'century21', name: 'Century 21 Aruba', url: 'https://century21aruba.com' },
   {
-    // /properties/ 404s; try the homepage and common WP archive paths.
     id: 'goldcoast', name: 'Gold Coast Aruba', url: 'https://www.goldcoastaruba.com',
     adapter: generic,
     config: {
       listingPattern: '/(property|properties|listing|listings|homes-for-sale|villas)/[^/]+',
       archives: [
         { path: '', status: 'sale', pages: 1 },
-        { path: '/homes-for-sale/', status: 'sale', pages: 1 },
         { path: '/property/', status: 'sale', pages: 1 },
       ],
     },

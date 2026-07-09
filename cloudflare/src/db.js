@@ -33,6 +33,47 @@ export async function deactivateMissing(env, sourceId, now) {
     .run();
 }
 
+// Tiny key-value store for sync state (created on demand — no migration).
+export async function ensureMeta(env) {
+  await env.DB.exec('CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT)');
+}
+
+export async function getMeta(env, key) {
+  const row = await env.DB.prepare('SELECT value FROM meta WHERE key = ?').bind(key).first();
+  return row?.value ?? null;
+}
+
+export async function setMeta(env, key, value) {
+  await env.DB.prepare('INSERT INTO meta (key, value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value')
+    .bind(key, value)
+    .run();
+}
+
+/** Map of external_id -> last_seen_at for one source (crawl prioritization). */
+export async function listingSeen(env, sourceId) {
+  const { results } = await env.DB.prepare('SELECT external_id, last_seen_at FROM listings WHERE source_id = ?')
+    .bind(sourceId)
+    .all();
+  return new Map(results.map((r) => [r.external_id, r.last_seen_at]));
+}
+
+/** Deactivate a source's listings whose external_id is not in keepIds. */
+export async function deactivateNotIn(env, sourceId, keepIds) {
+  const { results } = await env.DB.prepare('SELECT external_id FROM listings WHERE source_id = ? AND active = 1')
+    .bind(sourceId)
+    .all();
+  const gone = results.map((r) => r.external_id).filter((id) => !keepIds.has(id));
+  for (let i = 0; i < gone.length; i += 50) {
+    const chunk = gone.slice(i, i + 50);
+    await env.DB.prepare(
+      `UPDATE listings SET active = 0 WHERE source_id = ? AND external_id IN (${chunk.map(() => '?').join(',')})`
+    )
+      .bind(sourceId, ...chunk)
+      .run();
+  }
+  return gone.length;
+}
+
 export async function recordSyncRun(env, r) {
   await env.DB.prepare(
     `INSERT INTO sync_runs (source_id, started_at, finished_at, ok, listings_found, error)

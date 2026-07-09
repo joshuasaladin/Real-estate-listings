@@ -24,7 +24,7 @@ async function loadMeta() {
   for (const s of meta.sources.filter((s) => !s.demo)) {
     const li = document.createElement('li');
     li.innerHTML = `<a href="${s.url}" target="_blank" rel="noopener">${esc(s.name)}</a>
-      <span class="tag ${s.synced ? 'ok' : 'pending'}">${s.synced ? 'synced every 4h' : 'not synced yet'}</span>`;
+      <span class="tag ${s.synced ? 'ok' : 'pending'}">${s.synced ? 'auto-sync' : 'coming soon'}</span>`;
     dir.appendChild(li);
   }
 }
@@ -72,25 +72,22 @@ function renderGrid(res) {
       </div>
       <div class="card-body">
         <div class="card-price">${l.price_usd ? fmtUsd(l.price_usd) : (esc(l.price_raw) || 'Price on request')}
+          ${l.status === 'rent' ? '<small>/mo</small>' : ''}
           ${l.price_awg ? `<small>· ${fmtAwg(l.price_awg)}</small>` : ''}
-          ${l.status === 'rent' ? '<small>/ mo</small>' : ''}
         </div>
         <div class="card-title">${esc(l.title)}</div>
-        ${l.area ? `<div class="card-area">📍 ${esc(l.area)}</div>` : ''}
-        <div class="card-specs">
-          ${l.bedrooms != null ? `<span>🛏 ${l.bedrooms} bd</span>` : ''}
-          ${l.bathrooms != null ? `<span>🛁 ${l.bathrooms} ba</span>` : ''}
-          ${l.building_m2 ? `<span>🏠 ${l.building_m2} m²</span>` : ''}
-          ${l.lot_m2 ? `<span>📐 ${l.lot_m2} m² lot</span>` : ''}
-          <span>· ${esc(cap(l.type || ''))}</span>
+        <div class="card-meta">
+          ${l.area ? `<span>${esc(l.area)}</span>` : ''}
+          ${l.bedrooms != null ? `<span>${l.bedrooms} bd</span>` : ''}
+          ${l.bathrooms != null ? `<span>${l.bathrooms} ba</span>` : ''}
+          ${l.building_m2 ? `<span>${l.building_m2} m²</span>` : ''}
+          <span>${esc(cap(l.type || ''))}</span>
         </div>
-        <div class="card-agencies">
-          ${l.agencies.length > 1 ? `<span class="multi-agency">Listed by ${l.agencies.length} agencies</span>` : ''}
-          ${l.agencies.map((a) => `
-            <div class="agency-row">
-              <span class="agency-name">${esc(a.name)}</span>
-              <a class="agency-link" href="${esc(a.url)}" target="_blank" rel="noopener">View original ↗</a>
-            </div>`).join('')}
+        <div class="card-agency">
+          ${l.agencies.length > 1
+            ? `<span class="multi-agency">${l.agencies.length} agencies</span>`
+            : `<span class="agency-name">${esc(l.agencies[0]?.name || '')}</span>`}
+          <a href="${esc(l.agencies[0]?.url || '#')}" target="_blank" rel="noopener">View listing →</a>
         </div>
       </div>`;
     grid.appendChild(el);

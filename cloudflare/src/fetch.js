@@ -7,9 +7,17 @@ import { CONFIG } from './config.js';
 const robotsCache = new Map();
 const lastHit = new Map();
 let subrequestCount = 0; // per-invocation guard against the Workers subrequest cap
+let subrequestBudget = CONFIG.MAX_SUBREQUESTS;
 
-export function resetSubrequestBudget() {
+// On Workers Paid, set the SUBREQUEST_BUDGET variable (e.g. 900) to let each
+// sync crawl far more pages per run.
+export function resetSubrequestBudget(env) {
   subrequestCount = 0;
+  subrequestBudget = Number(env?.SUBREQUEST_BUDGET) || CONFIG.MAX_SUBREQUESTS;
+}
+
+export function remainingSubrequests() {
+  return Math.max(0, subrequestBudget - subrequestCount);
 }
 
 async function getRobots(origin) {
@@ -54,8 +62,8 @@ export async function isAllowed(url) {
 }
 
 export async function politeFetch(url) {
-  if (subrequestCount >= CONFIG.MAX_SUBREQUESTS) {
-    throw new Error(`subrequest budget (${CONFIG.MAX_SUBREQUESTS}) reached — raise MAX_SUBREQUESTS on Workers Paid`);
+  if (subrequestCount >= subrequestBudget) {
+    throw new Error(`subrequest budget (${subrequestBudget}) reached — set SUBREQUEST_BUDGET higher on Workers Paid`);
   }
   if (!(await isAllowed(url))) throw new Error(`robots.txt disallows fetching ${url}`);
   const host = new URL(url).host;
